@@ -75,13 +75,25 @@ export default function App() {
       ? canPlace(state.playerBoard, hover, spec.length, state.orientation)
       : false
 
+  // Touch devices have no hover, so the first tap previews and the second commits.
+  const isTouch =
+    typeof window !== 'undefined' && window.matchMedia('(hover: none), (pointer: coarse)').matches
+  const awaitingConfirm = isTouch && !!hover
+
   const handlePlace = useCallback(
     (coord: Coord) => {
+      if (isTouch && (hover?.row !== coord.row || hover?.col !== coord.col)) {
+        setHover(coord)
+        return
+      }
       playSound('place')
+      setHover(null)
       dispatch({ type: 'place', coord })
     },
-    [dispatch],
+    [dispatch, hover, isTouch],
   )
+
+  const handleRotate = useCallback(() => dispatch({ type: 'rotate' }), [dispatch])
 
   return (
     <div className="app">
@@ -107,9 +119,13 @@ export default function App() {
       {state.phase === 'placement' && (
         <div className="controls">
           <span className="controls__hint">
-            {spec ? `Placing ${spec.name} (${spec.length}) — ${state.orientation}` : 'Fleet ready'}
+            {spec
+              ? `Placing ${spec.name} (${spec.length}) — ${state.orientation}${
+                  awaitingConfirm ? ' — tap again to confirm' : ''
+                }`
+              : 'Fleet ready'}
           </span>
-          <button type="button" className="btn" onClick={() => dispatch({ type: 'rotate' })}>
+          <button type="button" className="btn" onClick={handleRotate}>
             Rotate (R)
           </button>
           <button type="button" className="btn" onClick={() => dispatch({ type: 'randomize' })}>

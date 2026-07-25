@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useReducer, useState } from 'react'
+import { BattleshipLogo } from './components/BattleshipLogo'
 import { Board } from './components/Board'
 import { FleetStatus } from './components/FleetStatus'
 import { ShotLog } from './components/ShotLog'
@@ -93,7 +94,10 @@ export default function App() {
   return (
     <div className="app">
       <header className="app__header">
-        <h1>Battleship AI</h1>
+        <h1 className="app__logo">
+          <BattleshipLogo />
+          <span>Battleship AI</span>
+        </h1>
         <div className="app__header-actions">
           <span className={`turn-indicator turn-indicator--${state.phase === 'playing' ? state.turn : state.phase}`}>
             {state.status}

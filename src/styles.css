@@ -53,6 +53,40 @@ body {
   text-transform: uppercase;
 }
 
+.app__logo {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.logo-ship {
+  width: clamp(52px, 9vw, 82px);
+  height: auto;
+  flex: none;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.45));
+}
+
+.logo-ship__hull {
+  fill: #22415f;
+}
+
+.logo-ship__deck {
+  fill: #2f5d86;
+}
+
+.logo-ship__tower,
+.logo-ship__gun {
+  fill: #3d7ba8;
+}
+
+.logo-ship__mast {
+  fill: var(--accent);
+}
+
+.logo-ship__wave {
+  fill: rgba(142, 202, 230, 0.35);
+}
+
 .app__header-actions {
   display: flex;
   align-items: center;
@@ -316,7 +350,30 @@ body {
 
 .fleet-status li {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fleet-status__name {
+  flex: none;
+  min-width: 5.4rem;
+}
+
+.fleet-status__health {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.ship-icon {
+  height: 20px;
+  flex: none;
+  fill: #9fc7e8;
+  opacity: 0.9;
+}
+
+.ship-icon--sunk {
+  fill: #ff8fa3;
+  opacity: 0.75;
 }
 
 .fleet-status__ship--sunk {

@@ -21,18 +21,23 @@ const context = (): AudioContext | null => {
   return ctx
 }
 
+/**
+ * Create and resume the AudioContext. Must be called from a user-gesture
+ * handler; browsers keep contexts created elsewhere suspended.
+ */
+export function unlockAudio(): void {
+  const audio = context()
+  if (!audio) return
+  if (audio.state === 'suspended') void audio.resume()
+}
+
 export const setSoundEnabled = (value: boolean): void => {
   enabled = value
 }
 
 export const isSoundEnabled = (): boolean => enabled
 
-export function playSound(name: SoundName): void {
-  if (!enabled) return
-  const audio = context()
-  if (!audio) return
-  if (audio.state === 'suspended') void audio.resume()
-
+function emit(audio: AudioContext, name: SoundName): void {
   const { freq, to, duration, type } = TONES[name]
   const osc = audio.createOscillator()
   const gain = audio.createGain()
@@ -42,10 +47,25 @@ export function playSound(name: SoundName): void {
   osc.frequency.setValueAtTime(freq, now)
   osc.frequency.exponentialRampToValueAtTime(Math.max(to, 1), now + duration)
   gain.gain.setValueAtTime(0.0001, now)
-  gain.gain.exponentialRampToValueAtTime(0.18, now + 0.01)
+  gain.gain.exponentialRampToValueAtTime(0.22, now + 0.01)
   gain.gain.exponentialRampToValueAtTime(0.0001, now + duration)
 
   osc.connect(gain).connect(audio.destination)
   osc.start(now)
   osc.stop(now + duration + 0.02)
+}
+
+export function playSound(name: SoundName): void {
+  if (!enabled) return
+  const audio = context()
+  if (!audio) return
+  if (audio.state === 'suspended') {
+    // Schedule only once the clock is actually running, otherwise the note is
+    // started against a frozen currentTime and is never heard.
+    void audio.resume().then(() => {
+      if (enabled && audio.state === 'running') emit(audio, name)
+    })
+    return
+  }
+  emit(audio, name)
 }

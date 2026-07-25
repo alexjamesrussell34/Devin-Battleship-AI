@@ -5,7 +5,7 @@ import { ShotLog } from './components/ShotLog'
 import { canPlace, shipCells } from './engine/board'
 import { Coord, FLEET } from './engine/types'
 import { Turn, activeSpec, createGame, reducer } from './state/gameState'
-import { playSound, setSoundEnabled } from './sound'
+import { playSound, setSoundEnabled, unlockAudio } from './sound'
 
 const AI_DELAY_MS = 650
 const SINK_FLASH_MS = 2200
@@ -22,6 +22,16 @@ export default function App() {
   useEffect(() => {
     setSoundEnabled(soundOn)
   }, [soundOn])
+
+  useEffect(() => {
+    const unlock = () => unlockAudio()
+    window.addEventListener('pointerdown', unlock)
+    window.addEventListener('keydown', unlock)
+    return () => {
+      window.removeEventListener('pointerdown', unlock)
+      window.removeEventListener('keydown', unlock)
+    }
+  }, [])
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -81,7 +91,14 @@ export default function App() {
           <span className={`turn-indicator turn-indicator--${state.phase === 'playing' ? state.turn : state.phase}`}>
             {state.status}
           </span>
-          <button type="button" className="btn btn--ghost" onClick={() => setSoundOn((v) => !v)}>
+          <button
+            type="button"
+            className="btn btn--ghost"
+            onClick={() => {
+              unlockAudio()
+              setSoundOn((v) => !v)
+            }}
+          >
             {soundOn ? 'Sound on' : 'Sound off'}
           </button>
         </div>

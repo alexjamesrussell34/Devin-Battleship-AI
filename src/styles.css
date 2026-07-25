@@ -177,7 +177,7 @@ body {
   cursor: crosshair;
 }
 
-.grid--interactive .cell:not(:disabled):hover {
+.grid--interactive .cell:not(:disabled):not(.cell--preview-ok):not(.cell--preview-bad):hover {
   background: var(--water-hover);
 }
 
@@ -196,6 +196,12 @@ body {
 .cell--sunk {
   background: var(--sunk);
   outline: 2px solid #ff8fa3;
+  outline-offset: -2px;
+}
+
+.cell--preview-ok,
+.cell--preview-bad {
+  outline: 2px solid rgba(255, 255, 255, 0.55);
   outline-offset: -2px;
 }
 

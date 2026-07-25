@@ -163,7 +163,11 @@ export function reducer(state: GameState, action: Action): GameState {
           status: 'You destroyed the enemy fleet. Victory!',
         }
       }
-      return { ...next, turn: 'ai', status: 'Enemy is taking aim…' }
+      return {
+        ...next,
+        turn: 'ai',
+        status: result.sunk ? `You sank the enemy ${result.sunk}!` : 'Enemy is taking aim…',
+      }
     }
 
     case 'ai-fire': {
@@ -181,7 +185,13 @@ export function reducer(state: GameState, action: Action): GameState {
           status: 'Your fleet has been destroyed. Defeat.',
         }
       }
-      return { ...next, turn: 'player', status: 'Your turn — fire at will.' }
+      return {
+        ...next,
+        turn: 'player',
+        status: result.sunk
+          ? `Enemy sank your ${result.sunk}! Your turn.`
+          : 'Your turn — fire at will.',
+      }
     }
 
     case 'play-again':

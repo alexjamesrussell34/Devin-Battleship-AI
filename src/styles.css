@@ -127,9 +127,61 @@ body {
 
 .boards {
   grid-area: boards;
+  position: relative;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
+}
+
+.sink-flash {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  z-index: 5;
+  padding: 0.7rem 1.4rem;
+  border: 2px solid #ff8fa3;
+  border-radius: 12px;
+  background: rgba(107, 15, 26, 0.92);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  font-size: clamp(1rem, 2.6vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: sink-flash 2.2s ease-out forwards;
+}
+
+.sink-flash--ai {
+  border-color: #ffd166;
+  background: rgba(120, 66, 8, 0.92);
+}
+
+@keyframes sink-flash {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+  12% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.06);
+  }
+  20%,
+  70% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sink-flash {
+    animation: none;
+  }
 }
 
 .board-panel h2 {

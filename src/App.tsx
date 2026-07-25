@@ -4,15 +4,17 @@ import { FleetStatus } from './components/FleetStatus'
 import { ShotLog } from './components/ShotLog'
 import { canPlace, shipCells } from './engine/board'
 import { Coord, FLEET } from './engine/types'
-import { activeSpec, createGame, reducer } from './state/gameState'
+import { Turn, activeSpec, createGame, reducer } from './state/gameState'
 import { playSound, setSoundEnabled } from './sound'
 
 const AI_DELAY_MS = 650
+const SINK_FLASH_MS = 2200
 
 export default function App() {
   const [state, dispatch] = useReducer(reducer, undefined, () => createGame())
   const [hover, setHover] = useState<Coord | null>(null)
   const [soundOn, setSoundOn] = useState(true)
+  const [sinkFlash, setSinkFlash] = useState<{ id: number; text: string; actor: Turn } | null>(null)
 
   const spec = activeSpec(state)
   const fleetReady = state.placedIndex >= FLEET.length
@@ -41,7 +43,16 @@ export default function App() {
   useEffect(() => {
     if (!latest) return
     playSound(latest.outcome === 'sunk' ? 'sunk' : latest.outcome)
+    if (latest.outcome === 'sunk') {
+      setSinkFlash({ id: latest.id, text: latest.text, actor: latest.actor })
+    }
   }, [latest?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!sinkFlash) return
+    const timer = window.setTimeout(() => setSinkFlash(null), SINK_FLASH_MS)
+    return () => window.clearTimeout(timer)
+  }, [sinkFlash])
 
   useEffect(() => {
     if (state.phase === 'game-over') playSound(state.winner === 'player' ? 'win' : 'lose')
@@ -121,6 +132,16 @@ export default function App() {
       )}
 
       <main className="boards">
+        {sinkFlash && (
+          <div
+            key={sinkFlash.id}
+            className={`sink-flash sink-flash--${sinkFlash.actor}`}
+            role="status"
+            aria-live="assertive"
+          >
+            {sinkFlash.text}
+          </div>
+        )}
         <Board
           title="Your fleet"
           board={state.playerBoard}

@@ -1,5 +1,6 @@
 import { Board as BoardModel, BOARD_SIZE, Coord, key } from '../engine/types'
 import { hasBeenShot, isShipSunk, shipAt } from '../engine/board'
+import { ShipSilhouette } from './ShipIcon'
 
 export type CellState = 'water' | 'ship' | 'hit' | 'miss' | 'sunk'
 
@@ -47,15 +48,17 @@ export function Board({
         className={`grid${interactive ? ' grid--interactive' : ''}`}
         onMouseLeave={() => onCellHover?.(null)}
       >
-        <div className="grid__corner" />
-        {columns.map((label) => (
-          <div key={`col-${label}`} className="grid__label">
+        <div className="grid__corner" style={{ gridArea: '1 / 1' }} />
+        {columns.map((label, col) => (
+          <div key={`col-${label}`} className="grid__label" style={{ gridArea: `1 / ${col + 2}` }}>
             {label}
           </div>
         ))}
         {Array.from({ length: BOARD_SIZE }, (_, row) => (
           <div key={`row-${row}`} className="grid__row" role="row">
-            <div className="grid__label">{row + 1}</div>
+            <div className="grid__label" style={{ gridArea: `${row + 2} / 1` }}>
+              {row + 1}
+            </div>
             {Array.from({ length: BOARD_SIZE }, (_, col) => {
               const coord = { row, col }
               const state = cellState(board, coord, fogOfWar)
@@ -67,6 +70,7 @@ export function Board({
                   className={`cell cell--${state}${
                     isPreview ? (previewValid ? ' cell--preview-ok' : ' cell--preview-bad') : ''
                   }`}
+                  style={{ gridArea: `${row + 2} / ${col + 2}` }}
                   disabled={!interactive}
                   aria-label={`${title} ${columns[col]}${row + 1} ${state}`}
                   onClick={() => onCellClick?.(coord)}
@@ -77,6 +81,24 @@ export function Board({
             })}
           </div>
         ))}
+        {board.ships.filter(isShipSunk).map((ship) => {
+          const top = Math.min(...ship.cells.map((c) => c.row))
+          const left = Math.min(...ship.cells.map((c) => c.col))
+          const horizontal = ship.orientation === 'horizontal'
+          return (
+            <div
+              key={`wreck-${ship.name}`}
+              className="ship-wreck"
+              style={{
+                // +2: the grid's first row/column holds the A-J / 1-10 labels.
+                gridColumn: `${left + 2} / span ${horizontal ? ship.length : 1}`,
+                gridRow: `${top + 2} / span ${horizontal ? 1 : ship.length}`,
+              }}
+            >
+              <ShipSilhouette name={ship.name} orientation={ship.orientation} />
+            </div>
+          )
+        })}
       </div>
     </section>
   )

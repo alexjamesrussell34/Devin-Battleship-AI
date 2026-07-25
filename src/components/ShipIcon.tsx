@@ -1,4 +1,4 @@
-import { ShipName } from '../engine/types'
+import { Orientation, ShipName } from '../engine/types'
 
 /** Simple side-on silhouettes, drawn on a 0..N*10 x 0..20 grid (N = ship length). */
 const SHAPES: Record<ShipName, { width: number; body: JSX.Element }> = {
@@ -71,6 +71,29 @@ export function ShipIcon({ name, sunk = false }: { name: ShipName; sunk?: boolea
       focusable="false"
     >
       {body}
+    </svg>
+  )
+}
+
+/** Wreck silhouette stretched across the cells a sunk ship occupies. */
+export function ShipSilhouette({
+  name,
+  orientation,
+}: {
+  name: ShipName
+  orientation: Orientation
+}) {
+  const { width, body } = SHAPES[name]
+  const vertical = orientation === 'vertical'
+  return (
+    <svg
+      className="ship-wreck__svg"
+      viewBox={vertical ? `0 0 20 ${width}` : `0 0 ${width} 20`}
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <g transform={vertical ? 'translate(20 0) rotate(90)' : undefined}>{body}</g>
     </svg>
   )
 }

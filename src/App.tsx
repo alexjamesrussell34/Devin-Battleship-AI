@@ -16,6 +16,7 @@ export default function App() {
   const [hover, setHover] = useState<Coord | null>(null)
   const [soundOn, setSoundOn] = useState(true)
   const [sinkFlash, setSinkFlash] = useState<{ id: number; text: string; actor: Turn } | null>(null)
+  const [endBanner, setEndBanner] = useState(false)
 
   const spec = activeSpec(state)
   const fleetReady = state.placedIndex >= FLEET.length
@@ -66,7 +67,9 @@ export default function App() {
   }, [sinkFlash])
 
   useEffect(() => {
-    if (state.phase === 'game-over') playSound(state.winner === 'player' ? 'win' : 'lose')
+    if (state.phase !== 'game-over') return
+    playSound(state.winner === 'player' ? 'win' : 'lose')
+    setEndBanner(true)
   }, [state.phase, state.winner])
 
   const preview =
@@ -145,6 +148,40 @@ export default function App() {
           >
             Start Game
           </button>
+        </div>
+      )}
+
+      {endBanner && state.phase === 'game-over' && (
+        <div
+          className={`end-banner end-banner--${state.winner === 'player' ? 'win' : 'lose'}`}
+          role="alertdialog"
+          aria-label={state.winner === 'player' ? 'You are victorious' : 'You lost'}
+        >
+          <div className="end-banner__inner">
+            <p className="end-banner__title">
+              {state.winner === 'player' ? 'You are victorious' : 'You lost'}
+            </p>
+            <p className="end-banner__subtitle">
+              {state.winner === 'player'
+                ? 'The enemy fleet lies on the seabed.'
+                : 'Your fleet has been sent to the depths.'}
+            </p>
+            <div className="end-banner__actions">
+              <button
+                type="button"
+                className="btn btn--primary"
+                onClick={() => {
+                  setEndBanner(false)
+                  dispatch({ type: 'play-again' })
+                }}
+              >
+                Play again
+              </button>
+              <button type="button" className="btn btn--ghost" onClick={() => setEndBanner(false)}>
+                View final board
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

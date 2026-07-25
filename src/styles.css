@@ -25,7 +25,7 @@ body {
 }
 
 .app {
-  max-width: 1180px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 1.25rem clamp(0.5rem, 2vw, 1.5rem) 3rem;
   display: grid;
@@ -184,7 +184,15 @@ body {
   }
 }
 
+.board-panel {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .board-panel h2 {
+  align-self: flex-start;
   margin: 0 0 0.5rem;
   font-size: 1rem;
   letter-spacing: 0.08em;
@@ -193,12 +201,13 @@ body {
 }
 
 .grid {
-  --cell: min(2.1rem, 7.5vw);
-  display: inline-grid;
-  grid-template-columns: repeat(11, var(--cell));
-  gap: 2px;
+  /* Fluid: fills the panel, capped so both boards stay on screen. */
+  width: min(100%, 34rem, calc(100dvh - 17rem));
+  display: grid;
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+  gap: clamp(1px, 0.3vw, 3px);
   background: rgba(0, 0, 0, 0.25);
-  padding: 4px;
+  padding: clamp(3px, 0.5vw, 6px);
   border-radius: 10px;
 }
 
@@ -211,13 +220,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.68rem;
+  font-size: clamp(0.55rem, 1.1vw, 0.78rem);
   opacity: 0.65;
 }
 
 .cell {
-  width: var(--cell);
-  height: var(--cell);
+  width: 100%;
+  aspect-ratio: 1;
   border: 1px solid rgba(142, 202, 230, 0.18);
   border-radius: 3px;
   background: var(--water);
@@ -374,10 +383,18 @@ body {
 
   .boards {
     grid-template-columns: minmax(0, 1fr);
-    justify-items: center;
   }
 
   .grid {
-    --cell: min(2.4rem, 8.2vw);
+    /* Keep both stacked boards within about one swipe of each other. */
+    width: min(100%, 30rem, 52dvh);
+  }
+
+  .app__header h1 {
+    font-size: clamp(1.2rem, 6vw, 1.6rem);
+  }
+
+  .board-panel h2 {
+    margin-bottom: 0.3rem;
   }
 }

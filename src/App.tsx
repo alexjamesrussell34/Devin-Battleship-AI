@@ -75,22 +75,17 @@ export default function App() {
       ? canPlace(state.playerBoard, hover, spec.length, state.orientation)
       : false
 
-  // Touch devices have no hover, so the first tap previews and the second commits.
+  // Touch devices have no hover, so pressing paints the preview before the tap commits.
   const isTouch =
     typeof window !== 'undefined' && window.matchMedia('(hover: none), (pointer: coarse)').matches
-  const awaitingConfirm = isTouch && !!hover
 
   const handlePlace = useCallback(
     (coord: Coord) => {
-      if (isTouch && (hover?.row !== coord.row || hover?.col !== coord.col)) {
-        setHover(coord)
-        return
-      }
       playSound('place')
       setHover(null)
       dispatch({ type: 'place', coord })
     },
-    [dispatch, hover, isTouch],
+    [dispatch],
   )
 
   const handleRotate = useCallback(() => dispatch({ type: 'rotate' }), [dispatch])
@@ -119,11 +114,7 @@ export default function App() {
       {state.phase === 'placement' && (
         <div className="controls">
           <span className="controls__hint">
-            {spec
-              ? `Placing ${spec.name} (${spec.length}) — ${state.orientation}${
-                  awaitingConfirm ? ' — tap again to confirm' : ''
-                }`
-              : 'Fleet ready'}
+            {spec ? `Placing ${spec.name} (${spec.length}) — ${state.orientation}` : 'Fleet ready'}
           </span>
           <button type="button" className="btn" onClick={handleRotate}>
             Rotate (R)
@@ -184,6 +175,7 @@ export default function App() {
           previewValid={previewValid}
           onCellClick={handlePlace}
           onCellHover={isTouch ? undefined : setHover}
+          onCellPress={isTouch ? setHover : undefined}
         />
         <Board
           title="Enemy waters"

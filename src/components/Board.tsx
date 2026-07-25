@@ -13,6 +13,7 @@ interface BoardProps {
   previewValid?: boolean
   onCellClick?: (coord: Coord) => void
   onCellHover?: (coord: Coord | null) => void
+  onCellPress?: (coord: Coord) => void
 }
 
 function cellState(board: BoardModel, coord: Coord, fogOfWar: boolean): CellState {
@@ -35,6 +36,7 @@ export function Board({
   previewValid = true,
   onCellClick,
   onCellHover,
+  onCellPress,
 }: BoardProps) {
   const previewKeys = new Set(preview.map(key))
 
@@ -68,6 +70,7 @@ export function Board({
                   disabled={!interactive}
                   aria-label={`${title} ${columns[col]}${row + 1} ${state}`}
                   onClick={() => onCellClick?.(coord)}
+                  onPointerDown={() => onCellPress?.(coord)}
                   onMouseEnter={() => onCellHover?.(coord)}
                 />
               )

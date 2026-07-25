@@ -223,6 +223,7 @@ body {
   background: var(--water);
   padding: 0;
   cursor: default;
+  touch-action: manipulation;
 }
 
 .grid--interactive .cell:not(:disabled) {

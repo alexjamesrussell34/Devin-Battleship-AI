@@ -7,7 +7,7 @@ export function ShotLog({ entries }: { entries: LogEntry[] }) {
       {entries.length === 0 ? (
         <p className="shot-log__empty">No shots fired yet.</p>
       ) : (
-        <ol>
+        <ol aria-label="Shot log">
           {entries.map((entry) => (
             <li key={entry.id} className={`shot-log__item shot-log__item--${entry.outcome}`}>
               <span className="shot-log__actor">{entry.actor === 'player' ? 'YOU' : 'AI'}</span>

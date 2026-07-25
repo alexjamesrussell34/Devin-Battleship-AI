@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useReducer, useState } from 'react'
 import { BattleshipLogo } from './components/BattleshipLogo'
 import { Board } from './components/Board'
+import { EndBanner } from './components/EndBanner'
 import { FleetStatus } from './components/FleetStatus'
 import { ShotLog } from './components/ShotLog'
 import { canPlace, shipCells } from './engine/board'
@@ -152,37 +153,14 @@ export default function App() {
       )}
 
       {endBanner && state.phase === 'game-over' && (
-        <div
-          className={`end-banner end-banner--${state.winner === 'player' ? 'win' : 'lose'}`}
-          role="alertdialog"
-          aria-label={state.winner === 'player' ? 'You are victorious' : 'You lost'}
-        >
-          <div className="end-banner__inner">
-            <p className="end-banner__title">
-              {state.winner === 'player' ? 'You are victorious' : 'You lost'}
-            </p>
-            <p className="end-banner__subtitle">
-              {state.winner === 'player'
-                ? 'The enemy fleet lies on the seabed.'
-                : 'Your fleet has been sent to the depths.'}
-            </p>
-            <div className="end-banner__actions">
-              <button
-                type="button"
-                className="btn btn--primary"
-                onClick={() => {
-                  setEndBanner(false)
-                  dispatch({ type: 'play-again' })
-                }}
-              >
-                Play again
-              </button>
-              <button type="button" className="btn btn--ghost" onClick={() => setEndBanner(false)}>
-                View final board
-              </button>
-            </div>
-          </div>
-        </div>
+        <EndBanner
+          winner={state.winner}
+          onPlayAgain={() => {
+            setEndBanner(false)
+            dispatch({ type: 'play-again' })
+          }}
+          onDismiss={() => setEndBanner(false)}
+        />
       )}
 
       {state.phase === 'game-over' && (

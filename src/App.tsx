@@ -183,7 +183,7 @@ export default function App() {
           preview={preview}
           previewValid={previewValid}
           onCellClick={handlePlace}
-          onCellHover={setHover}
+          onCellHover={isTouch ? undefined : setHover}
         />
         <Board
           title="Enemy waters"
